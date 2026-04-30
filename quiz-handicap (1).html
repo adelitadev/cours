@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Psychologie du Handicap · BUT1 S2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c27;
+  --border: rgba(255,255,255,0.07);
+  --text: #e8e8f0;
+  --muted: #6b6b80;
+  --moteur: #ff6b35;
+  --auditif: #4ecdc4;
+  --visuel: #a78bfa;
+  --good: #34d399;
+  --bad: #f87171;
+  --radius: 14px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* ── BRAIN DECOR ── */
+.brain-left, .brain-right {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 220px;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 0 18px #00e5ff) drop-shadow(0 0 40px #00b4d8);
+  animation: brainPulse 4s ease-in-out infinite;
+}
+.brain-left  { left: -30px; }
+.brain-right { right: -30px; transform: translateY(-50%) scaleX(-1); }
+
+@keyframes brainPulse {
+  0%, 100% { opacity: 0.18; filter: drop-shadow(0 0 18px #00e5ff) drop-shadow(0 0 40px #00b4d8); }
+  50%       { opacity: 0.30; filter: drop-shadow(0 0 30px #00e5ff) drop-shadow(0 0 70px #00b4d8) drop-shadow(0 0 10px #fff); }
+}
+
+@media (max-width: 900px) {
+  .brain-left, .brain-right { display: none; }
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  padding: 5rem 2rem 3rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -60%);
+  background: radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+  background: var(--surface);
+}
+
+.hero-badge span { color: var(--visuel); }
+
+.hero h1 {
+  font-size: clamp(2.2rem, 6vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.8rem;
+}
+
+.hero h1 em {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--visuel);
+}
+
+.hero-sub {
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-bottom: 2.5rem;
+}
+
+/* ── MODULE SELECTOR ── */
+.module-selector {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 1rem 3rem;
+}
+
+.module-btn {
+  position: relative;
+  padding: 1rem 1.8rem;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  min-width: 160px;
+  overflow: hidden;
+}
+
+.module-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.module-btn.moteur::before { background: linear-gradient(135deg, rgba(255,107,53,0.1), transparent); }
+.module-btn.auditif::before { background: linear-gradient(135deg, rgba(78,205,196,0.1), transparent); }
+.module-btn.visuel::before { background: linear-gradient(135deg, rgba(167,139,250,0.1), transparent); }
+
+.module-btn:hover::before, .module-btn.active::before { opacity: 1; }
+
+.module-btn.active.moteur { border-color: var(--moteur); }
+.module-btn.active.auditif { border-color: var(--auditif); }
+.module-btn.active.visuel { border-color: var(--visuel); }
+
+.module-icon { font-size: 1.4rem; }
+.module-label { font-size: 0.75rem; color: var(--muted); font-weight: 400; }
+
+.module-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0.7rem; right: 0.7rem;
+}
+.moteur .module-dot { background: var(--moteur); }
+.auditif .module-dot { background: var(--auditif); }
+.visuel .module-dot { background: var(--visuel); }
+
+/* ── QUIZ CONTAINER ── */
+.quiz-wrap {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 1.5rem 6rem;
+  display: none;
+}
+
+.quiz-wrap.visible { display: block; }
+
+/* Progress bar */
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.progress-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+}
+
+.progress-bar {
+  height: 3px;
+  background: var(--surface2);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.moteur-theme .progress-fill { background: var(--moteur); }
+.auditif-theme .progress-fill { background: var(--auditif); }
+.visuel-theme .progress-fill { background: var(--visuel); }
+
+/* Question card */
+.question-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2.2rem;
+  margin-bottom: 1rem;
+  animation: fadeUp 0.35s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.q-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 0.9rem;
+  text-transform: uppercase;
+}
+
+.q-number span.accent-moteur { color: var(--moteur); }
+.q-number span.accent-auditif { color: var(--auditif); }
+.q-number span.accent-visuel { color: var(--visuel); }
+
+.q-text {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  font-weight: 600;
+  line-height: 1.45;
+  margin-bottom: 1.6rem;
+  letter-spacing: -0.01em;
+}
+
+/* Options */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.2rem;
+  background: var(--surface2);
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-size: 0.93rem;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.option:hover:not(:disabled) {
+  border-color: var(--border);
+  transform: translateX(4px);
+  background: rgba(255,255,255,0.04);
+}
+
+.option-letter {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: all 0.18s;
+}
+
+.option.correct {
+  background: rgba(52,211,153,0.08);
+  border-color: var(--good);
+  color: var(--good);
+}
+
+.option.correct .option-letter {
+  background: var(--good);
+  color: #000;
+}
+
+.option.wrong {
+  background: rgba(248,113,113,0.08);
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.option.wrong .option-letter {
+  background: var(--bad);
+  color: #000;
+}
+
+.option.reveal-correct {
+  background: rgba(52,211,153,0.05);
+  border-color: rgba(52,211,153,0.3);
+  color: var(--good);
+}
+
+.option:disabled { cursor: default; }
+
+/* Explanation */
+.explanation {
+  background: var(--surface2);
+  border-left: 3px solid var(--good);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem 1.2rem;
+  margin-top: 1rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+  animation: fadeUp 0.3s ease both;
+  display: none;
+}
+
+.explanation.show { display: block; }
+.explanation strong { color: var(--text); }
+
+/* Nav buttons */
+.quiz-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.btn-next {
+  padding: 0.75rem 1.8rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--text);
+  color: var(--bg);
+  font-family: 'Syne', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  display: none;
+  letter-spacing: 0.02em;
+}
+
+.btn-next:hover { opacity: 0.85; transform: translateY(-1px); }
+.btn-next.show { display: block; }
+
+.score-inline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* ── SCORE SCREEN ── */
+.score-screen {
+  text-align: center;
+  padding: 3rem 2rem;
+  animation: fadeUp 0.5s ease both;
+  display: none;
+}
+
+.score-screen.visible { display: block; }
+
+.score-ring {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border: 3px solid var(--border);
+  background: var(--surface);
+  position: relative;
+}
+
+.score-ring svg {
+  position: absolute;
+  top: -3px; left: -3px;
+  width: 146px; height: 146px;
+  transform: rotate(-90deg);
+}
+
+.score-ring circle {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.score-num {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.score-denom {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.score-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.score-msg {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+}
+
+.btn-retry {
+  padding: 0.8rem 2rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  margin: 0.4rem;
+}
+
+.btn-retry:hover { background: var(--surface2); }
+
+/* ── REVIEW LIST ── */
+.review-list {
+  margin-top: 2rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.review-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  background: var(--surface);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.review-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 2px; }
+
+/* Mobile tweaks */
+@media (max-width: 500px) {
+  .hero { padding: 3rem 1.2rem 2rem; }
+  .question-card { padding: 1.4rem; }
+  .module-btn { min-width: 130px; }
+}
+</style>
+</head>
+<body>
+
+<!-- BRAIN LEFT -->
+<svg class="brain-left" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g fill="none" stroke="#00e5ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- main hemisphere left -->
+    <path d="M100 195 C55 195 20 168 14 138 C8 110 18 90 14 72 C10 54 18 30 40 20 C58 12 78 16 90 24 C96 28 100 34 100 34"/>
+    <!-- main hemisphere right -->
+    <path d="M100 195 C145 195 180 168 186 138 C192 110 182 90 186 72 C190 54 182 30 160 20 C142 12 122 16 110 24 C104 28 100 34 100 34"/>
+    <!-- vertical split -->
+    <line x1="100" y1="34" x2="100" y2="195"/>
+    <!-- left lobe wrinkles -->
+    <path d="M36 60 C44 52 56 56 60 66 C64 76 56 84 48 82"/>
+    <path d="M24 95 C32 86 48 90 52 102 C56 114 44 120 36 116"/>
+    <path d="M18 130 C28 120 44 126 46 138 C48 150 36 156 26 150"/>
+    <path d="M30 162 C42 154 56 160 58 172 C60 182 48 188 38 182"/>
+    <path d="M60 42 C68 34 80 36 84 46 C88 56 80 64 70 62"/>
+    <path d="M56 78 C66 70 78 74 80 86 C82 98 70 104 60 100"/>
+    <path d="M48 112 C58 104 70 108 72 120 C74 132 62 138 52 134"/>
+    <path d="M44 146 C56 138 68 144 68 156 C68 166 56 172 46 166"/>
+    <!-- right lobe wrinkles -->
+    <path d="M164 60 C156 52 144 56 140 66 C136 76 144 84 152 82"/>
+    <path d="M176 95 C168 86 152 90 148 102 C144 114 156 120 164 116"/>
+    <path d="M182 130 C172 120 156 126 154 138 C152 150 164 156 174 150"/>
+    <path d="M170 162 C158 154 144 160 142 172 C140 182 152 188 162 182"/>
+    <path d="M140 42 C132 34 120 36 116 46 C112 56 120 64 130 62"/>
+    <path d="M144 78 C134 70 122 74 120 86 C118 98 130 104 140 100"/>
+    <path d="M152 112 C142 104 130 108 128 120 C126 132 138 138 148 134"/>
+    <path d="M156 146 C144 138 132 144 132 156 C132 166 144 172 154 166"/>
+    <!-- brain stem -->
+    <path d="M88 195 C84 205 86 214 100 216 C114 214 116 205 112 195"/>
+    <!-- corpus callosum hint -->
+    <path d="M72 100 C82 92 100 90 118 92 C128 94 136 100 136 100" stroke-width="1"/>
+    <path d="M76 110 C86 104 100 102 114 104 C122 108 128 114 128 114" stroke-width="1"/>
+  </g>
+  <!-- glowing nodes -->
+  <circle cx="54" cy="70"  r="3" fill="#00e5ff" opacity="0.7"/>
+  <circle cx="40" cy="108" r="2.5" fill="#00e5ff" opacity="0.6"/>
+  <circle cx="34" cy="144" r="3" fill="#00e5ff" opacity="0.7"/>
+  <circle cx="66" cy="50"  r="2" fill="#7df9ff" opacity="0.8"/>
+  <circle cx="146" cy="70"  r="3" fill="#00e5ff" opacity="0.7"/>
+  <circle cx="160" cy="108" r="2.5" fill="#00e5ff" opacity="0.6"/>
+  <circle cx="166" cy="144" r="3" fill="#00e5ff" opacity="0.7"/>
+  <circle cx="134" cy="50"  r="2" fill="#7df9ff" opacity="0.8"/>
+  <circle cx="100" cy="90"  r="2.5" fill="#7df9ff" opacity="0.9"/>
+  <!-- synaptic sparks -->
+  <line x1="54" y1="70" x2="40" y2="108" stroke="#00e5ff" stroke-width="0.7" opacity="0.4"/>
+  <line x1="40" y1="108" x2="34" y2="144" stroke="#00e5ff" stroke-width="0.7" opacity="0.4"/>
+  <line x1="146" y1="70" x2="160" y2="108" stroke="#00e5ff" stroke-width="0.7" opacity="0.4"/>
+  <line x1="160" y1="108" x2="166" y2="144" stroke="#00e5ff" stroke-width="0.7" opacity="0.4"/>
+  <line x1="54" y1="70" x2="100" y2="90" stroke="#00e5ff" stroke-width="0.5" opacity="0.3"/>
+  <line x1="146" y1="70" x2="100" y2="90" stroke="#00e5ff" stroke-width="0.5" opacity="0.3"/>
+</svg>
+
+<!-- BRAIN RIGHT (mirrored via CSS) -->
+<svg class="brain-right" viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g fill="none" stroke="#00e5ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M100 195 C55 195 20 168 14 138 C8 110 18 90 14 72 C10 54 18 30 40 20 C58 12 78 16 90 24 C96 28 100 34 100 34"/>
+    <path d="M100 195 C145 195 180 168 186 138 C192 110 182 90 186 72 C190 54 182 30 160 20 C142 12 122 16 110 24 C104 28 100 34 100 34"/>
+    <line x1="100" y1="34" x2="100" y2="195"/>
+    <path d="M36 60 C44 52 56 56 60 66 C64 76 56 84 48 82"/>
+    <path d="M24 95 C32 86 48 90 52 102 C56 114 44 120 36 116"/>
+    <path d="M18 130 C28 120 44 126 46 138 C48 150 36 156 26 150"/>
+    <path d="M30 162 C42 154 56 160 58 172 C60 182 48 188 38 182"/>
+    <path d="M60 42 C68 34 80 36 84 46 C88 56 80 64 70 62"/>
+    <path d="M56 78 C66 70 78 74 80 86 C82 98 70 104 60 100"/>
+    <path d="M48 112 C58 104 70 108 72 120 C74 132 62 138 52 134"/>
+    <path d="M44 146 C56 138 68 144 68 156 C68 166 56 172 46 166"/>
+    <path d="M164 60 C156 52 144 56 140 66 C136 76 144 84 152 82"/>
+    <path d="M176 95 C168 86 152 90 148 102 C144 114 156 120 164 116"/>
+    <path d="M182 130 C172 120 156 126 154 138 C152 150 164 156 174 150"/>
+    <path d="M170 162 C158 154 144 160 142 172 C140 182 152 188 162 182"/>
+    <path d="M140 42 C132 34 120 36 116 46 C112 56 120 64 130 62"/>
+    <path d="M144 78 C134 70 122 74 120 86 C118 98 130 104 140 100"/>
+    <path d="M152 112 C142 104 130 108 128 120 C126 132 138 138 148 134"/>
+    <path d="M156 146 C144 138 132 144 132 156 C132 166 144 172 154 166"/>
+    <path d="M88 195 C84 205 86 214 100 216 C114 214 116 205 112 195"/>
+    <path d="M72 100 C82 92 100 90 118 92 C128 94 136 100 136 100" stroke-width="1"/>
+    <path d="M76 110 C86 104 100 102 114 104 C122 108 128 114 128 114" stroke-width="1"/>
+  </g>
+  <circle cx="54" cy="70"  r="3" fill="#00e5ff" opacity="0.7"/>
+  <circle cx="40" cy="108" r="2.5" fill="#00e5ff" opacity="0.6"/>
+  <circle cx="34" cy="144" r="3" fill="#00e5ff" opacity="0.7"/>
+  <circle cx="66" cy="50"  r="2" fill="#7df9ff" opacity="0.8"/>
+  <circle cx="146" cy="70"  r="3" fill="#00e5ff" opacity="0.7"/>
+  <circle cx="160" cy="108" r="2.5" fill="#00e5ff" opacity="0.6"/>
+  <circle cx="166" cy="144" r="3" fill="#00e5ff" opacity="0.7"/>
+  <circle cx="134" cy="50"  r="2" fill="#7df9ff" opacity="0.8"/>
+  <circle cx="100" cy="90"  r="2.5" fill="#7df9ff" opacity="0.9"/>
+  <line x1="54" y1="70" x2="40" y2="108" stroke="#00e5ff" stroke-width="0.7" opacity="0.4"/>
+  <line x1="40" y1="108" x2="34" y2="144" stroke="#00e5ff" stroke-width="0.7" opacity="0.4"/>
+  <line x1="146" y1="70" x2="160" y2="108" stroke="#00e5ff" stroke-width="0.7" opacity="0.4"/>
+  <line x1="160" y1="108" x2="166" y2="144" stroke="#00e5ff" stroke-width="0.7" opacity="0.4"/>
+  <line x1="54" y1="70" x2="100" y2="90" stroke="#00e5ff" stroke-width="0.5" opacity="0.3"/>
+  <line x1="146" y1="70" x2="100" y2="90" stroke="#00e5ff" stroke-width="0.5" opacity="0.3"/>
+</svg>
+
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">BUT1 · S2 · <span>Éducation Spécialisée</span></div>
+  <h1>Psychologie<br>du <em>Handicap</em></h1>
+  <p class="hero-sub">Choisis un module pour commencer le quiz — 10 questions par thème</p>
+</div>
+
+<div class="module-selector">
+  <button class="module-btn moteur" onclick="startQuiz('moteur')">
+    <div class="module-dot"></div>
+    <span class="module-icon">🦾</span>
+    <strong>Handicap moteur</strong>
+    <span class="module-label">10 questions</span>
+  </button>
+  <button class="module-btn auditif" onclick="startQuiz('auditif')">
+    <div class="module-dot"></div>
+    <span class="module-icon">👂</span>
+    <strong>Handicap auditif</strong>
+    <span class="module-label">10 questions</span>
+  </button>
+  <button class="module-btn visuel" onclick="startQuiz('visuel')">
+    <div class="module-dot"></div>
+    <span class="module-icon">👁</span>
+    <strong>Handicap visuel</strong>
+    <span class="module-label">10 questions</span>
+  </button>
+</div>
+
+<div id="quiz-moteur" class="quiz-wrap moteur-theme"></div>
+<div id="quiz-auditif" class="quiz-wrap auditif-theme"></div>
+<div id="quiz-visuel" class="quiz-wrap visuel-theme"></div>
+
+<script>
+const QUIZZES = {
+  moteur: {
+    color: 'var(--moteur)',
+    accent: 'accent-moteur',
+    label: 'Handicap moteur',
+    questions: [
+      {
+        q: "Quelle est la définition du handicap moteur ?",
+        opts: ["Atteinte partielle ou totale de la motricité, non associée à une déficience mentale", "Atteinte cognitive empêchant tout déplacement", "Trouble de la perception visuelle lié à une lésion cérébrale", "Déficience intellectuelle entraînant des difficultés motrices"],
+        ans: 0,
+        exp: "Le handicap moteur désigne une atteinte partielle ou totale de la motricité. Si une déficience intellectuelle (DI) s'y associe, on parle alors de polyhandicap."
+      },
+      {
+        q: "Environ combien de personnes sont concernées par le handicap moteur en France ?",
+        opts: ["500 000", "1,2 million", "2,3 millions", "4 millions"],
+        ans: 2,
+        exp: "Environ 2,3 millions de personnes sont concernées par le handicap moteur en France. Chez 37 % d'entre elles, la déficience est isolée ou prédominante."
+      },
+      {
+        q: "La paraplégie correspond à quelle atteinte ?",
+        opts: ["Paralysie des quatre membres", "Paralysie de la moitié du corps", "Paralysie des deux membres inférieurs", "Paralysie d'un seul bras"],
+        ans: 2,
+        exp: "La paraplégie est la paralysie des deux membres inférieurs. La personne paraplégique peut bénéficier d'une certaine mobilité du tronc (distance d'atteinte d'environ 20 cm)."
+      },
+      {
+        q: "La tétraplégie implique la paralysie de :",
+        opts: ["Deux membres inférieurs seulement", "La moitié du corps", "Quatre membres", "Un seul côté du corps"],
+        ans: 2,
+        exp: "La tétraplégie est une paralysie des quatre membres. La personne peut parfois conserver une certaine mobilité dans un bras ou une main."
+      },
+      {
+        q: "L'hémiplégie est définie comme :",
+        opts: ["Une paralysie des deux jambes", "Une paralysie (totale ou partielle) de la moitié du corps", "Une atteinte des muscles squelettiques uniquement", "Un trouble de la coordination fine des doigts"],
+        ans: 1,
+        exp: "L'hémiplégie est une paralysie totale ou partielle de la moitié du corps. La personne hémiplégique peut parfois se déplacer avec ou sans aide (béquille, canne)."
+      },
+      {
+        q: "Les lésions des structures du cerveau correspondent à quelle origine de la déficience motrice ?",
+        opts: ["Origine neuromusculaire", "Origine ostéoarticulaire", "Origine médullaire", "Origine cérébrale"],
+        ans: 3,
+        exp: "Les lésions cérébrales (précoces → IMC, ou tardives → traumatismes crâniens, AVC, tumeurs) correspondent à l'origine cérébrale. Les muscles et le squelette ne sont pas touchés directement."
+      },
+      {
+        q: "Quel pourcentage de personnes handicapées motrices se déplacent en fauteuil roulant ?",
+        opts: ["Environ 20 %", "Environ 37 %", "Environ 45 %", "Environ 60 %"],
+        ans: 2,
+        exp: "Environ 45 % des personnes concernées par le handicap moteur se déplacent en fauteuil roulant selon les données du cours."
+      },
+      {
+        q: "L'Infirmité Motrice Cérébrale (IMC) est une atteinte :",
+        opts: ["Héréditaire et évolutive des muscles", "Cérébrale précoce, non héréditaire et non évolutive", "Médullaire acquise après accident", "Ostéoarticulaire due à des malformations"],
+        ans: 1,
+        exp: "L'IMC résulte de lésions cérébrales précoces (origine cérébrale). Ces atteintes sont non héréditaires et non évolutives, et les muscles et le squelette ne sont pas directement touchés."
+      },
+      {
+        q: "Les myopathies appartiennent à quelle origine de la déficience motrice ?",
+        opts: ["Cérébrale", "Médullaire", "Neuromusculaire", "Ostéoarticulaire"],
+        ans: 2,
+        exp: "Les dystrophies neuromusculaires (myopathies) et les amyotrophies spinales infantiles appartiennent à l'origine neuromusculaire. Ces maladies génétiques et évolutives entraînent une perte de la force musculaire."
+      },
+      {
+        q: "Selon la classification des origines motrices, une fracture pathologique liée à une fragilité osseuse (comme l'ostéogénèse imparfaite) relève de :",
+        opts: ["L'origine neuromusculaire", "L'origine médullaire", "L'origine cérébrale", "L'origine ostéoarticulaire"],
+        ans: 3,
+        exp: "L'ostéogénèse imparfaite (trouble de la formation de l'os) relève de l'origine ostéoarticulaire, qui comprend les malformations, troubles osseux, lésions rhumatismales et amputations."
+      }
+    ]
+  },
+
+  auditif: {
+    color: 'var(--auditif)',
+    accent: 'accent-auditif',
+    label: 'Handicap auditif',
+    questions: [
+      {
+        q: "Selon l'OMS, que désigne la déficience auditive chez l'enfant ?",
+        opts: ["Une maladie chronique nécessitant un traitement médical intensif", "Une acuité auditive insuffisante pour apprendre sa langue, participer aux activités et suivre l'enseignement scolaire", "Une perte auditive uniquement congénitale liée à des gènes", "Une atteinte exclusivement bilatérale et permanente"],
+        ans: 1,
+        exp: "La définition de l'OMS met l'accent sur les conséquences fonctionnelles : apprendre sa langue, participer aux activités normales, suivre l'enseignement. La déficience auditive n'est pas une maladie, mais nécessite un accompagnement précoce."
+      },
+      {
+        q: "Quelle est la prévalence approximative de la surdité à la naissance en France ?",
+        opts: ["1 bébé sur 100", "1 bébé sur 500", "1 bébé sur 1000", "1 bébé sur 5000"],
+        ans: 2,
+        exp: "En France, environ 1 bébé sur 1000 naît sourd dans une famille sans antécédent, soit environ 700 enfants par an."
+      },
+      {
+        q: "La surdité de transmission est principalement due à :",
+        opts: ["Une atteinte de l'oreille interne ou du nerf auditif", "Une atteinte de l'oreille externe et/ou moyenne", "Une mutation génétique du gène CX26", "Un vieillissement du cortex auditif cérébral"],
+        ans: 1,
+        exp: "La surdité de transmission implique une atteinte de l'oreille externe et/ou de l'oreille moyenne (otites, traumatismes, malformations...). Elle entraîne généralement une perte inférieure à 60 dB et peut être traitée médicalement ou chirurgicalement."
+      },
+      {
+        q: "La surdité profonde correspond à une perte auditive de :",
+        opts: ["20 à 40 dB", "40 à 70 dB", "70 à 90 dB", "Supérieure à 90 dB"],
+        ans: 3,
+        exp: "L'audiogramme distingue : légère (20-40 dB), moyenne (40-70 dB), sévère (70-90 dB) et profonde (> 90 dB)."
+      },
+      {
+        q: "Quelle proportion des surdités est d'origine génétique ?",
+        opts: ["Environ 1/4", "Environ 1/3", "Environ 2/3", "La quasi-totalité"],
+        ans: 2,
+        exp: "Environ 2/3 des surdités sont d'origine génétique. Parmi celles-ci, 2 fois sur 3 elles sont non syndromiques, et dans la surdité congénitale, presque 50 % des cas sont liés à une mutation du gène de la connexine 26 (CX26)."
+      },
+      {
+        q: "Une surdité pré-linguistique survient :",
+        opts: ["Après 5-6 ans", "Entre 2 et 4 ans", "Dès 8-9 mois", "À l'adolescence"],
+        ans: 2,
+        exp: "La surdité pré-linguistique survient avant l'émergence du langage (vers 8-9 mois). Le paramètre essentiel est la date d'apparition par rapport au développement du langage."
+      },
+      {
+        q: "La Langue des Signes Française (LSF) est caractérisée par :",
+        opts: ["Un alphabet universel commun à toutes les langues des signes", "Une langue avec lexique et grammaire propres, non universelle", "Un simple épellation manuelle des mots", "Une méthode oraliste intégrant la lecture labiale"],
+        ans: 1,
+        exp: "La LSF est une langue à part entière avec son propre lexique et sa propre grammaire. Elle n'est pas universelle (chaque pays a sa langue des signes). Elle s'exprime via la forme, l'orientation, la localisation et la direction des mains + l'expression faciale."
+      },
+      {
+        q: "Le principal problème de la lecture labiale est :",
+        opts: ["Son coût matériel élevé", "L'existence de sosies labiaux (mots qui se ressemblent visuellement)", "Son apprentissage trop long (plus de 10 ans)", "Son inefficacité totale en milieu scolaire"],
+        ans: 1,
+        exp: "Les sosies labiaux (mots qui se ressemblent sur les lèvres) sont le principal obstacle de la lecture labiale. À cela s'ajoutent la bonne volonté des interlocuteurs (articuler, rester dans le champ de vision)."
+      },
+      {
+        q: "Quelle est la différence fondamentale entre une prothèse auditive et un implant cochléaire ?",
+        opts: ["La prothèse amplifie les sons, l'implant stimule directement le nerf auditif", "L'implant est porté à l'extérieur de l'oreille, la prothèse est interne", "La prothèse est réservée aux surdités profondes uniquement", "Il n'y a aucune différence fonctionnelle entre les deux"],
+        ans: 0,
+        exp: "La prothèse auditive amplifie les sons pour l'oreille restante. L'implant cochléaire contourne la partie endommagée et stimule directement le nerf auditif. L'implant est utilisé pour les surdités profondes où la prothèse est insuffisante."
+      },
+      {
+        q: "Parmi les facteurs suivants, lequel influence le développement de l'enfant sourd selon le cours ?",
+        opts: ["La couleur de cheveux des parents", "Le statut auditif des parents et la méthode d'éducation", "Le sexe de l'enfant uniquement", "Le niveau économique sans lien avec le statut auditif"],
+        ans: 1,
+        exp: "Deux types de facteurs interviennent : les facteurs propres à la déficience (degré de perte, âge d'apparition) et les facteurs environnementaux (support parental, statut auditif des parents, méthode d'éducation et prise en charge)."
+      }
+    ]
+  },
+
+  visuel: {
+    color: 'var(--visuel)',
+    accent: 'accent-visuel',
+    label: 'Handicap visuel',
+    questions: [
+      {
+        q: "Selon la définition légale en France, la cécité correspond à une acuité visuelle :",
+        opts: ["Inférieure à 5/10e", "Inférieure à 3/10e", "Inférieure à 1/10e", "Inférieure à 1/20e"],
+        ans: 3,
+        exp: "La définition légale française de la cécité est une acuité visuelle (AV) inférieure à 1/20e. La classification OMS distingue plusieurs catégories, de la déficience légère (cat. 0) à la cécité totale (cat. 5)."
+      },
+      {
+        q: "La malvoyance (amblyopie) légale correspond à :",
+        opts: ["AV < 1/20e uniquement", "AV entre 1/20e et 5/10e ET/OU champ visuel entre 10° et 20°", "AV entre 1/50e et 1/20e ET/OU CV entre 5° et 10°", "Absence totale de perception lumineuse"],
+        ans: 1,
+        exp: "La malvoyance légale est définie par une acuité visuelle comprise entre 1/20e et 5/10e ET/OU un champ visuel entre 10° et 20°. Elle peut se manifester par une vision floue, tubulaire, périphérique ou entravée."
+      },
+      {
+        q: "La Dégénérescence Maculaire Liée à l'Âge (DMLA) est une cause de cécité due à :",
+        opts: ["Une malformation congénitale", "Une cause périnatale (rétinopathie des prématurés)", "Le vieillissement", "Un accident de la route"],
+        ans: 2,
+        exp: "La DMLA est une cause de cécité liée au vieillissement. D'autres causes existent : génétiques (rétinite pigmentaire), malformations, périnatales (rétinopathie des prématurés) ou accidentelles."
+      },
+      {
+        q: "Les 'blindismes' désignent :",
+        opts: ["Des méthodes de locomotion pour les aveugles", "Des comportements stéréotypés (balancements, écholalies, poings dans les yeux...)", "Des aides techniques spécifiques à la déficience visuelle", "Des erreurs cognitives propres aux malvoyants"],
+        ans: 1,
+        exp: "Les blindismes sont des comportements stéréotypés observés chez les enfants aveugles : balancements, écholalies, poings dans les yeux. Ils diminuent généralement vers 6-7 ans."
+      },
+      {
+        q: "Quelle distinction importante le cours fait-il concernant l'âge d'apparition de la cécité ?",
+        opts: ["Les aveugles de naissance ont de meilleures compétences que les aveugles tardifs", "Les répercussions ne seront pas les mêmes entre aveugles précoces (< 6 mois) et aveugles tardifs (> 3 ans)", "L'âge d'apparition n'a aucune incidence sur le développement", "Seuls les aveugles précoces développent des blindismes"],
+        ans: 1,
+        exp: "La distinction aveugles précoces (durant les 6 premiers mois) / aveugles tardifs (après ~3 ans, ou après des coordinations vision-toucher) est fondamentale : les répercussions cognitives, sociales et motrices ne seront pas les mêmes."
+      },
+      {
+        q: "Dans quel domaine la vision joue-t-elle un rôle clé selon Hatwell (2004) ?",
+        opts: ["Uniquement dans les apprentissages mathématiques", "Dans les échanges sociaux, le langage, la permanence de l'objet, l'équilibre et la connaissance de l'espace", "Exclusivement dans la marche et les déplacements", "Seulement dans la reconnaissance des visages"],
+        ans: 1,
+        exp: "La vision joue un rôle dans de nombreux domaines : échanges sociaux, langage (verbalismes), permanence de l'objet, organisation posturale, construction de l'image du corps, connaissance de l'espace et des conséquences des mouvements."
+      },
+      {
+        q: "Le Braille peut être écrit grâce à quel outil de base ?",
+        opts: ["Un stylo à encre spéciale", "Un poinçon", "Un crayon gras adapté", "Une tablette graphique sonore"],
+        ans: 1,
+        exp: "Le poinçon est l'outil de base pour écrire le Braille. Il existe aussi la Perkins (machine à écrire braille), l'Iris (bloc-notes Braille) et le clavier classique avec synthèse vocale."
+      },
+      {
+        q: "Le centre Normandie-Lorraine mentionné dans le cours prend en charge des enfants :",
+        opts: ["De toute la France, de la naissance à 18 ans", "Des départements 76 et 27, de la Grande Section de Maternelle à la 3ème", "Uniquement les enfants malvoyants, pas les aveugles complets", "Des adultes en réinsertion professionnelle"],
+        ans: 1,
+        exp: "Le centre Normandie-Lorraine accueille des enfants des départements 76 (Seine-Maritime) et 27 (Eure), de la GSM (Grande Section de Maternelle) jusqu'à la 3ème."
+      },
+      {
+        q: "Quelles sont les deux principales difficultés scolaires liées à la déficience visuelle selon Lewi-Dumont ?",
+        opts: ["Les mathématiques et l'EPS", "L'accès aux supports visuels et la maîtrise du Braille / des outils compensateurs", "La mémoire et l'attention", "La socialisation et l'orientation"],
+        ans: 1,
+        exp: "Lewi-Dumont identifie principalement l'accès aux documents et supports visuels (adaptation du matériel) et la maîtrise du Braille et des outils techniques compensateurs comme les deux grands défis scolaires."
+      },
+      {
+        q: "Parmi les professionnels cités dans le cours, lequel est spécifique à l'accompagnement de la déficience visuelle ?",
+        opts: ["L'ergothérapeute", "L'éducateur de locomotion", "Le pédopsychiatre", "L'orthophoniste"],
+        ans: 1,
+        exp: "L'éducateur de locomotion est un professionnel spécifique à la déficience visuelle : il apprend aux personnes aveugles ou malvoyantes à se déplacer en sécurité et en autonomie. Le cours cite la technique du guide et les chiens-guides comme supports à cet apprentissage."
+      }
+    ]
+  }
+};
+
+let currentQuiz = null;
+let currentQ = 0;
+let score = 0;
+let answered = false;
+let userAnswers = [];
+
+function startQuiz(theme) {
+  // Reset all
+  document.querySelectorAll('.quiz-wrap').forEach(el => {
+    el.classList.remove('visible');
+    el.innerHTML = '';
+  });
+  document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.module-btn.${theme}`).classList.add('active');
+
+  currentQuiz = theme;
+  currentQ = 0;
+  score = 0;
+  answered = false;
+  userAnswers = [];
+
+  const wrap = document.getElementById(`quiz-${theme}`);
+  wrap.classList.add('visible');
+  renderQuestion(theme, wrap);
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderQuestion(theme, wrap) {
+  const quiz = QUIZZES[theme];
+  const total = quiz.questions.length;
+  const q = quiz.questions[currentQ];
+  const pct = (currentQ / total) * 100;
+  const letters = ['A', 'B', 'C', 'D'];
+
+  wrap.innerHTML = `
+    <div class="progress-header">
+      <span class="progress-label">Question <span style="color:${quiz.color}">${currentQ + 1}</span> / ${total}</span>
+      <span class="score-inline">Score : ${score} / ${currentQ}</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: ${pct}%"></div>
+    </div>
+    <div class="question-card">
+      <div class="q-number">Q${String(currentQ + 1).padStart(2,'0')} &nbsp;·&nbsp; <span class="${quiz.accent}">${quiz.label}</span></div>
+      <div class="q-text">${q.q}</div>
+      <div class="options" id="opts">
+        ${q.opts.map((opt, i) => `
+          <button class="option" onclick="answer(${i})" id="opt-${i}">
+            <span class="option-letter">${letters[i]}</span>
+            ${opt}
+          </button>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp">${q.exp}</div>
+    </div>
+    <div class="quiz-nav">
+      <div></div>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">${currentQ < total - 1 ? 'Question suivante →' : 'Voir les résultats →'}</button>
+    </div>
+  `;
+  answered = false;
+}
+
+function answer(idx) {
+  if (answered) return;
+  answered = true;
+
+  const quiz = QUIZZES[currentQuiz];
+  const q = quiz.questions[currentQ];
+  const correct = q.ans;
+  const isRight = idx === correct;
+  if (isRight) score++;
+  userAnswers.push({ question: q.q, chosen: idx, correct: correct, right: isRight });
+
+  const opts = document.querySelectorAll('.option');
+  opts.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === idx && isRight) btn.classList.add('correct');
+    else if (i === idx && !isRight) btn.classList.add('wrong');
+    else if (i === correct && !isRight) btn.classList.add('reveal-correct');
+  });
+
+  document.getElementById('exp').classList.add('show');
+  document.getElementById('btn-next').classList.add('show');
+
+  // update score inline
+  const total = quiz.questions.length;
+  document.querySelector('.score-inline').textContent = `Score : ${score} / ${currentQ + 1}`;
+}
+
+function nextQuestion() {
+  currentQ++;
+  const theme = currentQuiz;
+  const wrap = document.getElementById(`quiz-${theme}`);
+  const total = QUIZZES[theme].questions.length;
+
+  if (currentQ >= total) {
+    showScore(theme, wrap);
+  } else {
+    renderQuestion(theme, wrap);
+  }
+}
+
+function showScore(theme, wrap) {
+  const quiz = QUIZZES[theme];
+  const total = quiz.questions.length;
+  const pct = Math.round((score / total) * 100);
+  const circumference = 2 * Math.PI * 68;
+  const offset = circumference - (pct / 100) * circumference;
+
+  const msgs = [
+    [0, 40, "Retourne aux diapos, courage ! 💪"],
+    [40, 60, "Pas mal, encore quelques révisions..."],
+    [60, 80, "Bien joué ! Tu maîtrises bien le sujet."],
+    [80, 101, "Excellent ! Tu es prêt·e pour l'exam. 🎉"]
+  ];
+  const msg = msgs.find(([min, max]) => pct >= min && pct < max)[2];
+
+  const reviewHTML = userAnswers.map((a, i) => `
+    <div class="review-item">
+      <span class="review-icon">${a.right ? '✅' : '❌'}</span>
+      <span><strong>Q${i+1}</strong> — ${a.right ? 'Correct' : `Attendu : <em>${quiz.questions[i].opts[a.correct]}</em>`}</span>
+    </div>
+  `).join('');
+
+  wrap.innerHTML = `
+    <div class="score-screen visible">
+      <div class="score-ring">
+        <svg viewBox="0 0 146 146">
+          <circle cx="73" cy="73" r="68" stroke="rgba(255,255,255,0.05)" stroke-width="3"/>
+          <circle cx="73" cy="73" r="68" stroke="${quiz.color}" stroke-width="3"
+            stroke-dasharray="${circumference}"
+            stroke-dashoffset="${circumference}"
+            id="score-circle"/>
+        </svg>
+        <div class="score-num">${score}</div>
+        <div class="score-denom">/ ${total}</div>
+      </div>
+      <div class="score-title">${pct} %</div>
+      <div class="score-msg">${msg}</div>
+      <button class="btn-retry" onclick="startQuiz('${theme}')">Recommencer ce module</button>
+      <button class="btn-retry" onclick="pickAnother('${theme}')">Changer de module</button>
+      <div class="review-list">${reviewHTML}</div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const circle = document.getElementById('score-circle');
+    if (circle) circle.style.strokeDashoffset = offset;
+  }, 100);
+}
+
+function pickAnother(current) {
+  document.getElementById(`quiz-${current}`).classList.remove('visible');
+  document.getElementById(`quiz-${current}`).innerHTML = '';
+  document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.module-selector').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+</body>
+</html>
